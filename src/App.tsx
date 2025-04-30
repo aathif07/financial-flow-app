@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ExpenseProvider } from "./contexts/ExpenseContext";
 import { ThemeProvider } from "./hooks/use-theme";
+import * as React from "react";
 
 import AppLayout from "./components/layout/AppLayout";
 import Dashboard from "./pages/Dashboard";
@@ -19,11 +20,12 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+// Wrap the App component in a function component to ensure hooks are called correctly
+const App: React.FC = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <ThemeProvider defaultTheme="dark">
-        <ExpenseProvider>
+    <ThemeProvider defaultTheme="dark">
+      <ExpenseProvider>
+        <TooltipProvider>
           <Toaster />
           <Sonner />
           <BrowserRouter>
@@ -40,9 +42,9 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
-        </ExpenseProvider>
-      </ThemeProvider>
-    </TooltipProvider>
+        </TooltipProvider>
+      </ExpenseProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

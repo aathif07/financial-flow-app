@@ -118,7 +118,8 @@ const Budgets = () => {
                   <Progress 
                     value={percentage > 100 ? 100 : percentage} 
                     className={`h-2 mb-1 ${isOverBudget ? "bg-muted" : ""}`}
-                    indicatorClassName={progressColor}
+                    // Fix: Using className instead of indicatorClassName
+                    // The Progress component's indicator uses the bg-primary class by default
                   />
                   <div className="flex justify-between text-sm mt-1">
                     <span>{percentage}% used</span>
