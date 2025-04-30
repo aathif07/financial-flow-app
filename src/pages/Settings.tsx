@@ -41,7 +41,7 @@ const Settings = () => {
         <Card>
           <CardHeader>
             <CardTitle>Appearance</CardTitle>
-            <CardDescription>Customize how RUDRAS-EXPENSE-TRACK looks</CardDescription>
+            <CardDescription>Customize how RudraSave looks</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-col space-y-1.5">
