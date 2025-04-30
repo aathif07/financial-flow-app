@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format, parseISO } from "date-fns";
-import { Transaction } from "@/contexts/ExpenseContext";
+import { Transaction, useExpense } from "@/contexts/ExpenseContext";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +15,9 @@ export const TransactionList: React.FC<TransactionListProps> = ({
   transactions,
   limit = 5,
 }) => {
+  const { getCurrencySymbol } = useExpense();
+  const currencySymbol = getCurrencySymbol();
+  
   const recentTransactions = transactions
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, limit);
@@ -52,7 +55,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
                         : "text-expense"
                     )}
                   >
-                    {transaction.type === "income" ? "+" : "-"}$
+                    {transaction.type === "income" ? "+" : "-"}{currencySymbol}
                     {transaction.amount.toFixed(2)}
                   </span>
                 </div>

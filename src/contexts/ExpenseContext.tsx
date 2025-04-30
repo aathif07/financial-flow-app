@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 import { formatISO } from "date-fns";
 
 export type TransactionType = "income" | "expense";
+export type CurrencyType = "inr" | "usd" | "eur" | "gbp";
 
 export interface Transaction {
   id: string;
@@ -21,9 +22,17 @@ export interface Category {
   type: TransactionType;
 }
 
+export interface SavingSuggestion {
+  category: string;
+  amount: number;
+  description: string;
+}
+
 interface ExpenseContextType {
   transactions: Transaction[];
   categories: Category[];
+  currency: CurrencyType;
+  setCurrency: (currency: CurrencyType) => void;
   addTransaction: (transaction: Omit<Transaction, "id">) => void;
   editTransaction: (id: string, transaction: Partial<Transaction>) => void;
   deleteTransaction: (id: string) => void;
@@ -31,6 +40,8 @@ interface ExpenseContextType {
   balance: number;
   income: number;
   expenses: number;
+  getCurrencySymbol: () => string;
+  getSavingSuggestions: () => SavingSuggestion[];
 }
 
 const ExpenseContext = createContext<ExpenseContextType | undefined>(undefined);
@@ -119,6 +130,7 @@ const initialTransactions: Transaction[] = [
 export const ExpenseProvider = ({ children }: { children: ReactNode }) => {
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
   const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [currency, setCurrency] = useState<CurrencyType>("inr");
 
   // Calculate financial summaries
   const income = transactions
@@ -159,18 +171,77 @@ export const ExpenseProvider = ({ children }: { children: ReactNode }) => {
     setCategories(prev => [...prev, newCategory]);
   };
 
+  const getCurrencySymbol = () => {
+    switch (currency) {
+      case "inr": return "₹";
+      case "usd": return "$";
+      case "eur": return "€";
+      case "gbp": return "£";
+      default: return "₹";
+    }
+  };
+
+  // Generate saving suggestions based on expense data
+  const getSavingSuggestions = (): SavingSuggestion[] => {
+    const suggestions: SavingSuggestion[] = [];
+    
+    // Calculate total expenses by category
+    const categoryExpenses = transactions
+      .filter(t => t.type === "expense")
+      .reduce((acc, transaction) => {
+        const { category, amount } = transaction;
+        acc[category] = (acc[category] || 0) + amount;
+        return acc;
+      }, {} as Record<string, number>);
+    
+    // Find high spending categories
+    const categoryEntries = Object.entries(categoryExpenses);
+    categoryEntries.sort((a, b) => b[1] - a[1]);
+    
+    // Generate suggestions for top spending categories
+    if (categoryEntries.length > 0) {
+      const [topCategory, topAmount] = categoryEntries[0];
+      const suggestedSaving = Math.round(topAmount * 0.15); // Suggest 15% reduction
+      
+      suggestions.push({
+        category: topCategory,
+        amount: suggestedSaving,
+        description: `Reduce ${topCategory} spending by ${getCurrencySymbol()}${suggestedSaving} (15%). Consider meal planning or using public transport more.`
+      });
+    }
+    
+    // Additional general suggestions
+    suggestions.push({
+      category: "General",
+      amount: 0,
+      description: "Set up automatic transfers to a savings account on payday to ensure consistent saving."
+    });
+    
+    suggestions.push({
+      category: "Subscriptions",
+      amount: 0,
+      description: "Review your monthly subscriptions and cancel those you don't use regularly."
+    });
+    
+    return suggestions;
+  };
+
   return (
     <ExpenseContext.Provider
       value={{
         transactions,
         categories,
+        currency,
+        setCurrency,
         addTransaction,
         editTransaction,
         deleteTransaction,
         addCategory,
         balance,
         income,
-        expenses
+        expenses,
+        getCurrencySymbol,
+        getSavingSuggestions
       }}
     >
       {children}

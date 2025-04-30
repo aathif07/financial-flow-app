@@ -13,9 +13,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, IndianRupeeIcon, BanknoteIcon } from "lucide-react";
 import { formatISO } from "date-fns";
-import { Transaction, Category, TransactionType } from "@/contexts/ExpenseContext";
+import { Transaction, Category, TransactionType, useExpense } from "@/contexts/ExpenseContext";
 
 interface TransactionDialogProps {
   open: boolean;
@@ -38,6 +38,9 @@ export const TransactionDialog: React.FC<TransactionDialogProps> = ({
   const [category, setCategory] = useState("");
   const [date, setDate] = useState<Date>(new Date());
   const [notes, setNotes] = useState("");
+  const { getCurrencySymbol, getSavingSuggestions } = useExpense();
+  const currencySymbol = getCurrencySymbol();
+  const savingSuggestions = getSavingSuggestions();
 
   const isEditing = !!transaction;
 
@@ -107,18 +110,24 @@ export const TransactionDialog: React.FC<TransactionDialogProps> = ({
             
             <div>
               <label htmlFor="amount" className="block text-sm font-medium mb-1">
-                Amount
+                Amount ({currencySymbol})
               </label>
-              <Input
-                id="amount"
-                type="number"
-                min="0"
-                step="0.01"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="0.00"
-                required
-              />
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                  {currencySymbol}
+                </span>
+                <Input
+                  id="amount"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="0.00"
+                  className="pl-8"
+                  required
+                />
+              </div>
             </div>
             
             <div>
@@ -201,6 +210,22 @@ export const TransactionDialog: React.FC<TransactionDialogProps> = ({
                 rows={3}
               />
             </div>
+
+            {type === "expense" && !isEditing && (
+              <div className="bg-muted p-3 rounded-lg">
+                <h4 className="font-medium text-sm mb-2 flex items-center">
+                  <BanknoteIcon className="h-4 w-4 mr-2" />
+                  Saving Suggestions
+                </h4>
+                <ul className="space-y-2 text-sm">
+                  {savingSuggestions.map((suggestion, index) => (
+                    <li key={index} className="text-muted-foreground">
+                      {suggestion.description}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
           
           <DialogFooter>
