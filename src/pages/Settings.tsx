@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTheme } from "@/hooks/use-theme";
 import { useToast } from "@/hooks/use-toast";
+import { useExpense } from "@/contexts/ExpenseContext";
 
 const Settings = () => {
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
+  const { currency, setCurrency } = useExpense();
   
   const handleSaveGeneral = () => {
     toast({
@@ -87,15 +89,15 @@ const Settings = () => {
                 <Label htmlFor="currency">Currency</Label>
                 <p className="text-sm text-muted-foreground">Set your preferred currency</p>
               </div>
-              <Select defaultValue="usd">
+              <Select value={currency} onValueChange={(value) => setCurrency(value)}>
                 <SelectTrigger className="w-[120px]" id="currency">
                   <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="inr">INR (₹)</SelectItem>
                   <SelectItem value="usd">USD ($)</SelectItem>
                   <SelectItem value="eur">EUR (€)</SelectItem>
                   <SelectItem value="gbp">GBP (£)</SelectItem>
-                  <SelectItem value="inr">INR (₹)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -2,6 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowUp, ArrowDown } from "lucide-react";
+import { useExpense } from "@/contexts/ExpenseContext";
 
 interface BalanceSummaryProps {
   balance: number;
@@ -14,6 +15,9 @@ export const BalanceSummary: React.FC<BalanceSummaryProps> = ({
   income,
   expenses,
 }) => {
+  const { getCurrencySymbol } = useExpense();
+  const currencySymbol = getCurrencySymbol();
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in">
       <Card>
@@ -22,7 +26,7 @@ export const BalanceSummary: React.FC<BalanceSummaryProps> = ({
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            ${balance.toFixed(2)}
+            {currencySymbol}{balance.toFixed(2)}
           </div>
           <p className="text-xs text-muted-foreground mt-1">
             Current balance
@@ -37,7 +41,7 @@ export const BalanceSummary: React.FC<BalanceSummaryProps> = ({
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-income">
-            ${income.toFixed(2)}
+            {currencySymbol}{income.toFixed(2)}
           </div>
           <p className="text-xs text-muted-foreground mt-1">
             Total income
@@ -52,7 +56,7 @@ export const BalanceSummary: React.FC<BalanceSummaryProps> = ({
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-expense">
-            ${expenses.toFixed(2)}
+            {currencySymbol}{expenses.toFixed(2)}
           </div>
           <p className="text-xs text-muted-foreground mt-1">
             Total expenses

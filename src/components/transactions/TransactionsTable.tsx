@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Transaction } from "@/contexts/ExpenseContext";
+import { Transaction, useExpense } from "@/contexts/ExpenseContext";
 
 interface TransactionsTableProps {
   transactions: Transaction[];
@@ -37,6 +37,8 @@ export const TransactionsTable: React.FC<TransactionsTableProps> = ({
   onDeleteTransaction,
 }) => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const { getCurrencySymbol } = useExpense();
+  const currencySymbol = getCurrencySymbol();
 
   const confirmDelete = (id: string) => {
     setDeleteId(id);
@@ -90,7 +92,7 @@ export const TransactionsTable: React.FC<TransactionsTableProps> = ({
                     "text-right font-medium",
                     transaction.type === "income" ? "text-income" : "text-expense"
                   )}>
-                    {transaction.type === "income" ? "+" : "-"}${transaction.amount.toFixed(2)}
+                    {transaction.type === "income" ? "+" : "-"}{currencySymbol}{transaction.amount.toFixed(2)}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
