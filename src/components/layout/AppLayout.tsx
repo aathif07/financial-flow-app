@@ -24,7 +24,7 @@ export const AppLayout = () => {
       {/* Sidebar for desktop */}
       <div className="hidden md:flex flex-col w-64 bg-sidebar border-r shadow-sm">
         <div className="p-5 border-b">
-          <h1 className="text-2xl font-bold text-primary">RUDRAS-EXPENSE-TRACK</h1>
+          <h1 className="text-2xl font-bold text-primary">RudraSave</h1>
         </div>
         <nav className="flex-1 pt-5">
           <ul className="space-y-1 px-3">
@@ -85,7 +85,7 @@ export const AppLayout = () => {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden pb-16 md:pb-0">
         <div className="flex items-center justify-between p-4 md:hidden">
-          <h1 className="text-xl font-bold text-primary">RUDRAS-EXPENSE-TRACK</h1>
+          <h1 className="text-xl font-bold text-primary">RudraSave</h1>
           <Button 
             variant="ghost" 
             size="icon" 
