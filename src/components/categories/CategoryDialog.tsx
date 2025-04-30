@@ -1,44 +1,63 @@
 
 import React, { useState, useEffect } from "react";
-import { 
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { Category, TransactionType } from "@/contexts/ExpenseContext";
 
 interface CategoryDialogProps {
   open: boolean;
   onClose: () => void;
   onSubmit: (category: Omit<Category, "id">) => void;
+  category?: Category;
 }
 
-const PRESET_COLORS = [
-  "#FF5733", "#33FF57", "#3357FF", "#F033FF", "#33FFF0",
-  "#FFD700", "#C0C0C0", "#90EE90", "#FF6347", "#4682B4",
-  "#9370DB", "#3CB371", "#FF7F50", "#6495ED", "#8A2BE2",
+const DEFAULT_COLORS = [
+  "#FF5733", "#33FF57", "#3357FF", "#F033FF", "#33FFF0", 
+  "#FFD700", "#C0C0C0", "#90EE90", "#FFA07A", "#87CEFA"
 ];
 
 export const CategoryDialog: React.FC<CategoryDialogProps> = ({
   open,
   onClose,
   onSubmit,
+  category,
 }) => {
   const [name, setName] = useState("");
-  const [color, setColor] = useState(PRESET_COLORS[0]);
+  const [color, setColor] = useState(DEFAULT_COLORS[0]);
   const [type, setType] = useState<TransactionType>("expense");
 
+  const isEditing = !!category;
+
+  // Reset form or populate with category data when dialog opens
   useEffect(() => {
     if (open) {
-      // Reset form for new category
-      setName("");
-      setColor(PRESET_COLORS[0]);
-      setType("expense");
+      if (category) {
+        setName(category.name);
+        setColor(category.color);
+        setType(category.type);
+      } else {
+        // Reset form for new category
+        setName("");
+        setColor(DEFAULT_COLORS[0]);
+        setType("expense");
+      }
     }
-  }, [open]);
+  }, [open, category]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,13 +76,15 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add New Category</DialogTitle>
+          <DialogTitle>
+            {isEditing ? "Edit Category" : "Add New Category"}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4 py-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium mb-1">
-                Category Name
+                Name
               </label>
               <Input
                 id="name"
@@ -93,19 +114,20 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Color
               </label>
               <div className="grid grid-cols-5 gap-2">
-                {PRESET_COLORS.map((presetColor) => (
-                  <div
-                    key={presetColor}
-                    onClick={() => setColor(presetColor)}
+                {DEFAULT_COLORS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
                     className={cn(
-                      "h-8 w-8 rounded-full cursor-pointer border-2",
-                      color === presetColor ? "border-primary" : "border-transparent"
+                      "h-8 w-8 rounded-full border-2",
+                      color === c ? "border-primary" : "border-transparent"
                     )}
-                    style={{ backgroundColor: presetColor }}
+                    style={{ backgroundColor: c }}
+                    onClick={() => setColor(c)}
                   />
                 ))}
               </div>
@@ -117,7 +139,7 @@ export const CategoryDialog: React.FC<CategoryDialogProps> = ({
               Cancel
             </Button>
             <Button type="submit">
-              Add Category
+              {isEditing ? "Update" : "Add"} Category
             </Button>
           </DialogFooter>
         </form>
